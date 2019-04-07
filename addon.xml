@@ -7,10 +7,12 @@
     </requires>
     <extension point="xbmc.python.pluginsource" library="default.py">
         <provides>video</provides>
+        <medialibraryscanpath content="tvshows">play/</medialibraryscanpath>
     </extension>
     <extension point="xbmc.addon.metadata">
         <platform>all</platform>
         <language>en de fr ru</language>
+        <reuselanguageinvoker>true</reuselanguageinvoker>
         <summary lang="en_GB">Wakanim.tv - Anime streaming live from japan</summary>
         <summary lang="de_DE">Wakanim.tv - Anime Streaming live aus Japan</summary>
         <summary lang="fr_FR">Wakanim.tv - Streaming d'animes VOSTFR en direct du Japon</summary>

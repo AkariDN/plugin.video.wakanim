@@ -32,6 +32,26 @@ msgctxt "#30004"
 msgid "Synchronize play time progress"
 msgstr ""
 
+msgctxt "#30005"
+msgid "Select TV shows..."
+msgstr ""
+
+msgctxt "#30006"
+msgid "Merge and sort seasons, fix season names"
+msgstr ""
+
+msgctxt "#30007"
+msgid "Include studio, director and writer information"
+msgstr ""
+
+msgctxt "#30008"
+msgid "Filter dubbing/subtitles"
+msgstr ""
+
+msgctxt "#30009"
+msgid "Initial library scanning"
+msgstr ""
+
 msgctxt "#30010"
 msgid "Region"
 msgstr ""
@@ -118,4 +138,8 @@ msgstr ""
 
 msgctxt "#30047"
 msgid "Due to security reasons a verification link has been send to your wakanim email account.\nRestart the addon after confirming this link."
+msgstr ""
+
+msgctxt "#30048"
+msgid "You should first perform initial media library scanning in plugin settings dialog to use this plugin as a video source"
 msgstr ""

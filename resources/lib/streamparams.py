@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Wakanim - Watch videos from the german anime platform Wakanim.tv on Kodi.
-# Copyright (C) 2017 MrKrabat
+# Copyright (C) 2018 MrKrabat, AkariDN
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -22,23 +22,10 @@ try:
 except ImportError:
     from urllib.parse import unquote, urlencode
 
-import xbmc
-import xbmcgui
-
 import inputstreamhelper
+
 from .api import getCookies
-
-
-def log(args, msg, lvl=xbmc.LOGDEBUG):
-    """Log msg to Kodi journal
-    """
-    xbmc.log("[PLUGIN] {0}: {1}".format(args._addonname, msg), lvl)
-
-
-def errdlg(args):
-    """Display dialog with "Failed to play video" message
-    """
-    xbmcgui.Dialog().ok(args._addonname, args._addon.getLocalizedString(30044))
+from .common import enc, log, log_debug, log_error, showdlg, iteritems
 
 
 def parse_stream_config(html, prefix):
@@ -91,16 +78,6 @@ def parse_stream_config(html, prefix):
     return json.loads("{" + result)
 
 
-def enc(s):
-    """For python2 encode unicode strings to utf-8
-       Remove after python3 migration
-    """
-    try:
-        return s.encode("utf-8") if isinstance(s, unicode) else s
-    except NameError:
-        return s
-
-
 def get_stream_params_from_json(data):
     """Get stream parameters from JSON format
        Parameters:
@@ -125,7 +102,7 @@ def get_stream_params_from_json(data):
         drm = drm[u'widevine']
     else:
         # if no 'widewine' get first license type from drm list
-        result['drm'], drm = next(iter(drm.items()))
+        result['drm'], drm = next(iter(iteritems(drm)))
         result['drm'] = enc(result['drm'])
     result['key'] = enc(drm[u'url'])
     result['headers'] = {enc(h[u'name']): enc(h[u'value']) for h in drm.get(u'headers', [])}
@@ -176,15 +153,15 @@ def getStreamParams(args, html):
         # try parse with JSON
         result = get_stream_params_from_json(parse_stream_config(html, "jwplayer(\"jwplayer-container\").setup({"))
     except (ValueError, KeyError, TypeError):
-        log(args, "Error parsing JWPlayer config, trying old method", xbmc.LOGNOTICE)
+        log("Error parsing JWPlayer config, trying old method")
         # fallback to old method
         result = get_stream_params_fallback(html)
     if not result:
-        log(args, "Invalid JWPlayer config", xbmc.LOGERROR)
-        errdlg(args)
+        log_error("Invalid JWPlayer config")
+        showdlg(args, 30044)
         return None
 
-    log(args, "Stream proto '{0}' drm '{1}'".format(result['proto'], result['drm']), xbmc.LOGDEBUG)
+    log_debug("Stream proto '{0}' drm '{1}'".format(result['proto'], result['drm']))
 
     # prepare stream parameters
     if not result['url'].startswith("http"):
@@ -198,20 +175,20 @@ def getStreamParams(args, html):
         result['proto'] = "mpd"
         result['content-type'] = "application/dash+xml"
     else:
-        log(args, "Unknown stream protocol '{0}'".format(result['proto']), xbmc.LOGNOTICE)
+        log("Unknown stream protocol '{0}'".format(result['proto']))
     if result['drm'] == "widevine":
         result['drm'] = "com.widevine.alpha"
     else:
-        log(args, "Unknown stream license type '{0}'".format(result['drm']), xbmc.LOGNOTICE)
+        log("Unknown stream license type '{0}'".format(result['drm']))
 
     # check stream parameters with InputStreamHelper
     try:
         if not inputstreamhelper.Helper(result['proto'], result['drm']).check_inputstream():
-            log(args, "InputStreamHelper: check stream failed", xbmc.LOGERROR)
+            log_error("InputStreamHelper: check stream failed")
             return None
     except inputstreamhelper.Helper.InputStreamException as e:
-        log(args, "InputStreamHelper: {0}".format(e), xbmc.LOGERROR)
-        errdlg(args)
+        log_error("InputStreamHelper: {0}".format(e))
+        showdlg(args, 30044)
         return None
 
     # prepare parameters for InputStream Adaptive
@@ -220,7 +197,7 @@ def getStreamParams(args, html):
     if result['drm']:
         params[a+'.license_type'] = result['drm']
         headers = ""
-        for k,v in list(result['headers'].items()):
+        for k,v in iteritems(result['headers']):
             headers += urlencode({k: v}) + "&"
         headers += "User-Agent=Mozilla%2F5.0%20%28Windows%20NT%2010.0%3B%20Win64%3B%20x64%29%20AppleWebKit%2F537.36%20%28KHTML%2C%20like%20Gecko%29%20Chrome%2F60.0.3112.113%20Safari%2F537.36&Content-Type=text%2Fxml&SOAPAction=http%3A%2F%2Fschemas.microsoft.com%2FDRM%2F2007%2F03%2Fprotocols%2FAcquireLicense|R{SSM}|"
         params[a+'.license_key'] = result['key'] + "|" + headers

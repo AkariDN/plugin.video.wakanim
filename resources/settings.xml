@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
-    <setting id="country" type="select" lvalues="30011|30012|30013|30014" label="30010" default="0" />
-    <setting type="sep" />
-    <setting id="wakanim_username" type="text" label="30001" default=""/>
-    <setting id="wakanim_password" type="text" label="30002" option="hidden" default=""/>
-    <setting type="sep" />
-    <setting id="sync_playtime" type="bool" label="30004" default="true"/>
-    <setting id="inputstream_adaptive" type="action" label="30003" option="close" action="RunPlugin(plugin://plugin.video.wakanim/?mode=mpd)"/>
+    <category label="128">
+        <setting id="country" type="select" lvalues="30011|30012|30013|30014" label="30010" default="0" />
+        <setting type="sep" />
+        <setting id="wakanim_username" type="text" label="30001" default=""/>
+        <setting id="wakanim_password" type="text" label="30002" option="hidden" default=""/>
+        <setting type="sep" />
+        <setting id="sync_playtime" type="bool" label="30004" default="true"/>
+        <setting id="inputstream_adaptive" type="action" label="30003" option="close" action="RunPlugin(plugin://plugin.video.wakanim/?mode=mpd)"/>
+    </category>
+    <category label="14202">
+        <setting id="select_tvshows" type="action" label="30005" option="close" action="RunPlugin(plugin://plugin.video.wakanim/?mode=select_tvshows)"/>
+        <setting id="sids" type="text" visible="false" enabled="true" default=""/>
+        <setting id="merge_seasons" type="bool" label="30006" default="true"/>
+        <setting id="include_creators" type="bool" label="30007" default="false"/>
+        <setting id="info_filter" type="text" label="30008" default=""/>
+        <setting type="sep"/>
+        <setting id="initial_scan" type="action" label="30009" option="close" action="RunPlugin(plugin://plugin.video.wakanim/?mode=initial_scan)"/>
+    </category>
 </settings>

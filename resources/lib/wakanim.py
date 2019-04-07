@@ -26,6 +26,8 @@ from . import api
 from . import view
 from . import model
 from . import controller
+from .common import PLUGIN_LIBRARY_URL
+from .library import selectTVShows, doInitialScan, libraryMain
 
 
 def main(argv):
@@ -67,7 +69,10 @@ def main(argv):
         # list menue
         api.start(args)
         xbmcplugin.setContent(int(args._argv[1]), "tvshows")
-        check_mode(args)
+        if argv[0] == PLUGIN_LIBRARY_URL:
+            libraryMain(args)
+        else:
+            check_mode(args)
         api.close(args)
 
 
@@ -112,6 +117,11 @@ def check_mode(args):
     elif mode == "trailer":
         item = xbmcgui.ListItem(getattr(args, "title", "Title not provided"), path=args.url)
         xbmcplugin.setResolvedUrl(int(args._argv[1]), True, item)
+    elif mode == "select_tvshows":
+        selectTVShows(args)
+        args._addon.openSettings()
+    elif mode == "initial_scan":
+        doInitialScan(args)
     else:
         # unkown mode
         xbmc.log("[PLUGIN] %s: Failed in check_mode '%s'" % (args._addonname, str(mode)), xbmc.LOGERROR)
